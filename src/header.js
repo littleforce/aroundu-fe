@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import { Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
 class Header extends Component {
-
+  constructor(props) {
+    super(props);
+  }
+  handleFocus(event) {
+    event.preventDefault();
+  }
   render() {
     const guestNav = (
       <Nav pullRight>
@@ -15,8 +19,8 @@ class Header extends Component {
     );
     const userNav = (
       <Nav pullRight>
-        <NavItem eventKey={1} href="#">登录</NavItem>
-        <NavItem eventKey={2} href="#">注册</NavItem>
+        <NavItem eventKey={1} href="#" id="loginEntry" onClick={this.props.handleClick}>登录</NavItem>
+        <NavItem eventKey={2} href="#" id="registerEntry" onClick={this.props.handleClick}>注册</NavItem>
       </Nav>
     );
     let rightNav;
