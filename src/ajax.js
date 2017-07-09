@@ -9,9 +9,9 @@ function getHeaders() {
 }
 function loginAjax(username, password) {
   let headers, data, url, req, body;
-  headers = getHeaders(),
-  url = URL.base + URL.login,
-  data = {username, password}
+  headers = getHeaders();
+  url = URL.base + URL.login;
+  data = {username, password};
   body = new FormData();
   body.append('json', JSON.stringify(data));
   req = new Request(url, {method: 'POST', headers, body});
