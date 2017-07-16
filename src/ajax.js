@@ -1,26 +1,49 @@
+import $ from 'jquery';
 const URL = {
-  base: 'http://xx.com/api/',
-  login: 'login'
+  base: 'http://localhost:80/api/',
+  login: 'login',
+  register: 'register'
+};
+function getDefaultSettings() {
+  let settings = {};
+  settings.async = true;
+  settings.crossDomain = true;
+  settings.headers = {
+    'content-type': 'application/x-www-form-urlencoded'
+  };
+  return settings;
 }
-function getHeaders() {
-  var headers = new Headers();
-  headers.append('Accept', 'application/json');
-  return headers;
+function loginAjax({email, password}) {
+  let settings = getDefaultSettings();
+  settings.url = URL.base + URL.login;
+  settings.data = {
+    email,
+    password
+  };
+  settings.method = 'POST';
+  $.ajax(settings).done(function (response) {
+    console.log(response.token);
+  }).fail(function (res) {
+
+  });
 }
-function loginAjax(username, password) {
-  let headers, data, url, req, body;
-  headers = getHeaders();
-  url = URL.base + URL.login;
-  data = {username, password};
-  body = new FormData();
-  body.append('json', JSON.stringify(data));
-  req = new Request(url, {method: 'POST', headers, body});
-  fetch(req).then(function(response) {
-    return response.json();
-  }).then(function(json) {
-    alert(json);
+function registerAjax({name, email, password, password_confirmation}, cb) {
+  let settings = getDefaultSettings();
+  settings.url = URL.base + URL.register;
+  settings.data = {
+    name,
+    email,
+    password,
+    password_confirmation
+  };
+  settings.method = 'POST';
+  $.ajax(settings).done(function (res) {
+    if (res.error == 0) {
+      cb();
+    }
   });
 }
 export {
-  loginAjax
+  loginAjax,
+  registerAjax
 };

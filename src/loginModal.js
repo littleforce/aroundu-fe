@@ -9,13 +9,13 @@ class LoginModal extends Component {
     this.close = this.close.bind(this);
     this.itemList = [
       {
-        id: "userName",
+        id: "login-username",
         type: "text",
         label:"用户名",
         placeholder: "username"
       },
       {
-        id: "password",
+        id: "login-password",
         type: "password",
         label:"密码",
         placeholder: "username"
@@ -23,7 +23,14 @@ class LoginModal extends Component {
     ];
   }
   toLogin() {
-    loginAjax('chy', '123');
+    let username = document.getElementById('login-username').value;
+    let password = document.getElementById('login-password').value;
+    loginAjax(
+      {
+        email: username,
+        password
+      }
+    );
   }
   close() {
     this.props.closeModal('login');
@@ -33,7 +40,7 @@ class LoginModal extends Component {
       <FormInlineGroup key={item.id} {...item}/>
     );
     return (
-      <Modal bsSize="large" show={this.props.showModal} onHide={this.close} dialogClassName="custom-modal" >
+      <Modal id="login-modal" bsSize="large" show={this.props.showModal} onHide={this.close} dialogClassName="custom-modal" >
           <Modal.Header closeButton>
             <Modal.Title>登录</Modal.Title>
           </Modal.Header>
