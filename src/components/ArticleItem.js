@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Row, Col, Label, Glyphicon } from 'react-bootstrap';
 export default class ArticleItem extends Component {
-  constructor(props) {
-    super(props);
-  }
+  // constructor(props) {
+  //   super(props);
+  // }
   render() {
     return (
       <li className="list-group-item">

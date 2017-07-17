@@ -13,7 +13,10 @@ function getDefaultSettings() {
   };
   return settings;
 }
-function loginAjax({email, password}) {
+function loginAjax(
+  {email, password},
+  {success, fail}
+) {
   let settings = getDefaultSettings();
   settings.url = URL.base + URL.login;
   settings.data = {
@@ -22,12 +25,16 @@ function loginAjax({email, password}) {
   };
   settings.method = 'POST';
   $.ajax(settings).done(function (response) {
-    console.log(response.token);
+    success(response.token);
   }).fail(function (res) {
-
+    fail();
   });
 }
-function registerAjax({name, email, password, password_confirmation}, cb) {
+function registerAjax
+(
+  {name, email, password, password_confirmation},
+  {success, fail}
+) {
   let settings = getDefaultSettings();
   settings.url = URL.base + URL.register;
   settings.data = {
@@ -38,9 +45,13 @@ function registerAjax({name, email, password, password_confirmation}, cb) {
   };
   settings.method = 'POST';
   $.ajax(settings).done(function (res) {
-    if (res.error == 0) {
-      cb();
+    if (res.error === 0) {
+      success();
+    } else {
+      fail();
     }
+  }).fail(function () {
+    fail();
   });
 }
 export {

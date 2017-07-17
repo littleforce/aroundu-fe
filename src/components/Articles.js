@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { Grid, Row, Col, ListGroup } from 'react-bootstrap';
 import ArticleItem from './ArticleItem';
 export default class Articles extends Component {
-  constructor(props) {
-    super(props);
-  }
+  // constructor(props) {
+  //   super(props);
+  // }
   componentDidMount() {
 
   }
