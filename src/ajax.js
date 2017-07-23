@@ -25,6 +25,8 @@ function loginAjax(
   };
   settings.method = 'POST';
   $.ajax(settings).done(function (response) {
+    let token = response.token;
+    localStorage.setItem('arounduToken', token);
     success(response.token);
   }).fail(function (res) {
     fail();

@@ -2,12 +2,6 @@ import React, { Component } from 'react';
 import { Grid, Row, Col, ListGroup } from 'react-bootstrap';
 import ArticleItem from './ArticleItem';
 export default class Articles extends Component {
-  // constructor(props) {
-  //   super(props);
-  // }
-  componentDidMount() {
-
-  }
   getArticleItems(articles) {
     let articleItems = [];
     for (let item in articles) {
