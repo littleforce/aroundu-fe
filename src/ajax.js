@@ -1,62 +1,66 @@
 import $ from 'jquery';
 const URL = {
-  base: 'http://localhost:80/api/',
-  login: 'login',
-  register: 'register'
+  base: 'http://localhost:80/api/'
 };
-function getDefaultSettings() {
+const ajaxConfig = {
+  login: {
+    isPost: true,
+    needToken: false,
+    url: 'login'
+  },
+  register: {
+    isPost: true,
+    needToken: false,
+    url: 'register'
+  },
+  createArticle: {
+    isPost: true,
+    needToken: false,
+    url: 'article'
+  }
+}
+function getDefaultSettings(
+  config = {
+    isPost: true,
+    needToken: false
+  }) {
   let settings = {};
   settings.async = true;
   settings.crossDomain = true;
   settings.headers = {
     'content-type': 'application/x-www-form-urlencoded'
   };
+  settings.method = config.isPost ? 'POST' : 'GET';
+  if (config.needToken) {
+    let token = localStorage.getItem('arounduToken');
+    settings.headers.Authorization = 'Bearer ' + token;
+  }
   return settings;
 }
-function loginAjax(
-  {email, password},
-  {success, fail}
-) {
-  let settings = getDefaultSettings();
-  settings.url = URL.base + URL.login;
-  settings.data = {
-    email,
-    password
-  };
-  settings.method = 'POST';
-  $.ajax(settings).done(function (response) {
-    let token = response.token;
-    localStorage.setItem('arounduToken', token);
-    success(response.token);
-  }).fail(function (res) {
-    fail();
-  });
-}
-function registerAjax
-(
-  {name, email, password, password_confirmation},
-  {success, fail}
-) {
+
+function createArticleAjax(data, success, fail) {
   let settings = getDefaultSettings();
   settings.url = URL.base + URL.register;
-  settings.data = {
-    name,
-    email,
-    password,
-    password_confirmation
-  };
-  settings.method = 'POST';
+  settings.data = data;
   $.ajax(settings).done(function (res) {
-    if (res.error === 0) {
-      success();
-    } else {
-      fail();
-    }
+    success()
   }).fail(function () {
     fail();
   });
 }
+function checkToken() {
+  let token = localStorage.getItem('arounduToken');
+  return token === null ? false : token;
+}
+function sendAjax(type, data) {
+  let config = ajaxConfig[type];
+  let settings = getDefaultSettings(config);
+  settings.url = URL.base + config.url;
+  settings.data = data;
+  return $.ajax(settings);
+}
 export {
-  loginAjax,
-  registerAjax
+  createArticleAjax,
+  checkToken,
+  sendAjax
 };

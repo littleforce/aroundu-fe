@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
 import { Form, Modal, Button, Row, Col, Alert } from 'react-bootstrap';
 import FormInlineGroup from './FormInlineGroup';
-import { loginAjax } from '../ajax';
+import { sendAjax } from '../ajax';
+import { swal } from '../swal.js';
 class LoginModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: this.props.showModal,
-      loginResult: 'not'
+      showModal: this.props.showModal
     };
     this.close = this.close.bind(this);
     this.toLogin = this.toLogin.bind(this);
-    this.renderLoginResult = this.renderLoginResult.bind(this);
     this.itemList = [
       {
         id: "login-username",
@@ -27,58 +26,40 @@ class LoginModal extends Component {
       }
     ];
   }
-  renderLoginResult() {
-    let alert;
-    switch (this.state.loginResult) {
-      case 'success':
-        alert = (
-          <Alert bsStyle="success">
-            <strong>恭喜！</strong>登录成功。即将自动跳转
-          </Alert>
-        );
-        break;
-      case 'not':
-        alert = null;
-        break;
-      case 'fail':
-        alert = (
-          <Alert bsStyle="danger">
-            <strong>抱歉</strong>账户或密码错误
-          </Alert>
-        );
-        break;
-      default:
-        break;
-    }
-    return alert;
-  }
   toLogin(event) {
     event.preventDefault();
-    function loginSuccess(token) {
-      this.setState({loginResult: 'success'});
-
-      setTimeout(function() {
-        this.close();
-        this.props.loginCb(token);
-        this.setState({loginResult: 'not'});
-      }.bind(this), 3000);
-    }
-    function loginFail() {
-      this.setState({loginResult: 'fail'});
-    }
 
     let username = document.getElementById('login-username').value;
     let password = document.getElementById('login-password').value;
-    loginAjax(
-      {
-        email: username,
-        password
-      },
-      {
-        success: loginSuccess.bind(this),
-        fail: loginFail.bind(this)
-      }
-    );
+    let data = {
+      email: username,
+      password
+    };
+    swal({
+      title: "确认登录",
+      type: "info",
+      showCancelButton: true,
+      closeOnConfirm: false,
+      showLoaderOnConfirm: true,
+    },
+    function(){
+      sendAjax('login', data).done(function (res) {
+        if (res.error === 0) {
+          swal({
+            title: "登录成功",
+            timer: 2000,
+            showConfirmButton: false
+          },() => {
+            this.close();
+            this.props.loginCb(res.token);
+          });
+        } else {
+          swal('登录失败');
+        }
+      }).fail(function () {
+        swal('登录失败');
+      });
+    });
   }
   close() {
     this.props.closeModal('login');
@@ -87,7 +68,6 @@ class LoginModal extends Component {
     let FormGroupList = this.itemList.map((item) =>
       <FormInlineGroup key={item.id} {...item}/>
     );
-    let alert = this.renderLoginResult();
     return (
       <Modal id="login-modal" bsSize="large" show={this.props.showModal} onHide={this.close} dialogClassName="custom-modal" >
           <Modal.Header closeButton>
@@ -104,7 +84,6 @@ class LoginModal extends Component {
                 </Col>
               </Row>
             </Form>
-            {alert}
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.close}>Close</Button>

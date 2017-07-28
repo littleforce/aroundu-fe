@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Form, Modal, Button, Col, Row, Alert } from 'react-bootstrap';
 import FormInlineGroup from './FormInlineGroup';
-import { registerAjax } from '../ajax';
+import { sendAjax } from '../ajax';
+import { swal } from '../swal.js';
 class RegisterModal extends Component {
   constructor(props) {
     super(props);
@@ -11,7 +12,6 @@ class RegisterModal extends Component {
     };
     this.close = this.close.bind(this);
     this.toRegister = this.toRegister.bind(this);
-    this.renderRegisterResult = this.renderRegisterResult.bind(this);
     this.itemList = [
       {
         id: "register-nickname",
@@ -44,63 +44,40 @@ class RegisterModal extends Component {
   }
   toRegister(event) {
     event.preventDefault();
-    function registerSuccess() {
-      this.setState({registerResult: 'success'});
-
-      setTimeout(function() {
-        this.close();
-        this.setState({loginResult: 'not'});
-      }.bind(this), 3000);
-    }
-    function registerFail() {
-      this.setState({registerResult: 'fail'});
-    }
     let nickname = document.getElementById('register-nickname').value;
     let username = document.getElementById('register-username').value;
     let password = document.getElementById('register-password').value;
     let repassword = document.getElementById('register-repassword').value;
-    registerAjax(
-      {
-        name: nickname,
-        email: username,
-        password: password,
-        password_confirmation: repassword
-      },
-      {
-        success: registerSuccess.bind(this),
-        fail: registerFail.bind(this)
+    let data = {
+      name: nickname,
+      email: username,
+      password: password,
+      password_confirmation: repassword
+    };
+    swal({
+      title: "确认注册",
+      type: "info",
+      showCancelButton: true,
+      closeOnConfirm: false,
+      showLoaderOnConfirm: true,
+    },
+    function(){
+      sendAjax('register', data).done(function (res) {
+        if (res.error === 0) {
+          swal('注册成功');
+          this.close();
+        } else {
+          swal('注册失败');
+        }
+      }).fail(function () {
+        swal('注册失败');
       });
-  }
-  renderRegisterResult() {
-    let alert;
-    switch (this.state.registerResult) {
-      case 'success':
-        alert = (
-          <Alert bsStyle="success">
-            <strong>恭喜！</strong>注册成功,稍后请登录
-          </Alert>
-        );
-        break;
-      case 'not':
-        alert = null;
-        break;
-      case 'fail':
-        alert = (
-          <Alert bsStyle="danger">
-            <strong>抱歉</strong>注册失败
-          </Alert>
-        );
-        break;
-      default:
-        break;
-    }
-    return alert;
+    });
   }
   render() {
     let FormGroupList = this.itemList.map((item) =>
       <FormInlineGroup key={item.id} {...item}/>
     );
-    let alert = this.renderRegisterResult();
     return (
       <Modal id="register-modal" bsSize="large" show={this.props.showModal} onHide={this.close} dialogClassName="custom-modal" >
           <Modal.Header closeButton>
@@ -118,7 +95,6 @@ class RegisterModal extends Component {
               </Row>
 
             </Form>
-            {alert}
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.close}>Close</Button>

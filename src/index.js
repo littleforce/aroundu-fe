@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import App from './containers/App';
 import registerServiceWorker from './registerServiceWorker';
 import './style/index.css';
-//import 'Draft.css'
+import './style/simditor.css';
 import { LOGIN_STATE } from './actions';
 import blogApp from './reducers.js';
 
